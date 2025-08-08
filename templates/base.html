@@ -5,8 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>shed. {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="./style.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+{#    <link rel="stylesheet" href="./style.css">#}
+{#    <link rel="icon" href="./favicon.ico" type="image/x-icon">#}
+{#    <link rel="icon" href="https://trailpghstg.wpengine.com/wp-content/uploads/2018/10/cropped-TrailPGH_badgelogo_5747-192x192.png" sizes="192x192" />#}
+    <style>
+        :root {
+            --color-primary: #000;
+            --color-background: #fff;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            --color-primary: #fff;
+            --color-background: #000;
+        }
+
+        body {
+            background-color: var(--color-background);
+            color: var(--color-primary);
+        }
+
+        h1 {
+            color: var(--color-primary);
+        }
+    </style>
 </head>
 <body>
 
