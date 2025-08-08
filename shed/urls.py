@@ -1,5 +1,5 @@
 """
-URL configuration for shed project.
+URL configuration for gps project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -16,9 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from shed.views import index
+
+from gps.views import index as gps_index
+from shed.views import index as shed_index
 
 urlpatterns = [
-    path("", index, name="index"),
+    path("", shed_index, name="index"),
     path('admin/', admin.site.urls),
+    path("gps/", gps_index, name="gps")
 ]
