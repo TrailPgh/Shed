@@ -1,0 +1,18 @@
+:root {
+    --color-primary: #000;
+    --color-background: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+    --color-primary: #fff;
+    --color-background: #000;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-primary);
+}
+
+h1 {
+    color: var(--color-primary);
+}
