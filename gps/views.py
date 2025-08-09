@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 
 def index(request):
-    return render(request, 'gps/index.html')
+    return render(request, "gps/index.html")
 
 
 ##
@@ -19,4 +19,4 @@ def index(request):
 # depending on the scene and settings.
 # Features like HDR and Live Photos can increase the file size.
 def upload_image(request):
-    return render(request, 'gps/upload_image.html')
+    return render(request, "gps/upload_image.html")
