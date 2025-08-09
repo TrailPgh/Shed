@@ -18,10 +18,12 @@ from django.contrib import admin
 from django.urls import path
 
 from gps.views import index as gps_index
+from gps.views import upload_image as gps_upload_image
 from shed.views import index as shed_index
 
 urlpatterns = [
     path("", shed_index, name="index"),
     path('admin/', admin.site.urls),
-    path("gps/", gps_index, name="gps")
+    path("gps/", gps_index, name="gps"),
+    path("gps/upload_image", gps_upload_image, name="gps_upload_image"),
 ]
