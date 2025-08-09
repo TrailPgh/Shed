@@ -135,3 +135,11 @@ STATICFILES_DIRS = (
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
+##
+# for image uploads. both should be kept equal and in MB.
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024 # 10 MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024 # 10 MB
