@@ -1,6 +1,5 @@
 import logging
 
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from .forms import ImageUploadForm
@@ -27,11 +26,17 @@ def index(request):
 # depending on the scene and settings.
 # Features like HDR and Live Photos can increase the file size.
 def upload_image(request):
+    form = ImageUploadForm()
+    image = ImageGps(None)
+    lat = None
+    lon = None
+    ctx = {"form": form, "lat": lat, "lon": lon}
     if request.method == "POST":
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            ImageGps.from_image_bytes(request.FILES["file"])
-            return HttpResponseRedirect("/gps/upload_image?msg=done")
-    else:
-        form = ImageUploadForm()
-    return render(request, "gps/upload_image.html", {"form": form})
+            image = ImageGps.from_image_bytes(request.FILES["file"])
+            lat = image.lat
+            lon = image.lon
+            logger.info(f"{__name__}: {lat} {lon}")
+            ctx = {"form": form, "lat": lat, "lon": lon}
+    return render(request, "gps/upload_image.html", ctx)

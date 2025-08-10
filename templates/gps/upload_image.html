@@ -9,17 +9,42 @@
         <a href="/">Home</a>
         /
         <a href="./">GPS</a>
-        <hr />
     </div>
+    <hr />
 
-    <h2>
-        Upload Image
-    </h2>
+    {% if lat or lon %}
+        <h2>
+            Results
+        </h2>
+        <p>
+            Lat, Lon: {{ lat }}, {{ lon }}
+        </p>
+        <a href="gps/upload_image">
+            Start over
+        </a>
+    {% endif %}
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
-    </form>
+    {% if lat == None %}
+        <h2>
+            Upload Image
+        </h2>
+        <p>
+            Note: this is very "alpha" and will have rough edges. Note:
+        </p>
+        <ul>
+            <li>JPEG is probably best, though several photo formats are theoretically supported.</li>
+            <li>images are limited to 10MB.</li>
+        </ul>
+        <fieldset>
+            <legend>
+                Upload Image
+            </legend>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Upload</button>
+            </form>
+        </fieldset>
+    {% endif %}
 
 {% endblock %}
