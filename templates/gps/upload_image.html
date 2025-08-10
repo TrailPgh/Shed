@@ -33,8 +33,11 @@
     {% endif %}
 
     {% if lat == None %}
+        <h1>
+            Pluck GPS Coords from Image
+        </h1>
         <h2>
-            Upload Image
+            Upload an Image to Begin
         </h2>
         <p>
             Please note that this is very "alpha" and will have rough edges:
@@ -46,7 +49,7 @@
         </ul>
         <fieldset>
             <legend>
-                Upload Image
+                Upload an Image with GPS Coords
             </legend>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
