@@ -48,8 +48,7 @@
                 Upload Image
             </legend>
             <form method="post" enctype="multipart/form-data">
-{#                {% TODO: fix CSRF, it fails in GCR due to does not match any trusted origins. %}#}
-{#                {% csrf_token %}#}
+                {% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit">Upload</button>
             </form>

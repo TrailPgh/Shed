@@ -34,6 +34,14 @@ ALLOWED_HOSTS = [
     "shed.trailpghstg.wpengine.com",
     "shed.trailpittsburgh.org",
 ]
+##
+# CSRF_TRUSTED_ORIGINS is a list of hostnames that are trusted to serve CSRF cookies.
+# This is required for Google Cloud Run.
+# Dev links are http, internet links are https, so as a shortcut, we add both.
+CSRF_TRUSTED_ORIGINS = []
+for allowed in ALLOWED_HOSTS:
+    CSRF_TRUSTED_ORIGINS.append(f"http://{allowed}")
+    CSRF_TRUSTED_ORIGINS.append(f"https://{allowed}")
 
 
 # Application definition
