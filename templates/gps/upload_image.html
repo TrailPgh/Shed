@@ -16,12 +16,20 @@
         <h2>
             Results
         </h2>
-        <p>
-            Lat, Lon: {{ lat }}, {{ lon }}
+        <fieldset>
+            <legend>
+                Latitude, Longitude
+            </legend>
+            <p>
+                {{ lat }}, {{ lon }}
+            </p>
+        </fieldset>
+        <p style="margin-top: 60px;">
+            Go here to
+            <a href="/gps/upload_image">
+                start over
+            </a>
         </p>
-        <a href="gps/upload_image">
-            Start over
-        </a>
     {% endif %}
 
     {% if lat == None %}
