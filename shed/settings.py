@@ -31,7 +31,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "[::1",
     "shed-93023544150.us-central1.run.app",  # google cloud run domain.
-    "shed.trailpghstg.wpengine.com",
+    "shedstg.trailpittsburgh.org",  # staging domain.
     "shed.trailpittsburgh.org",
 ]
 ##
