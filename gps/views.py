@@ -37,6 +37,6 @@ def upload_image(request):
             image = ImageGps.from_image_bytes(request.FILES["file"])
             lat = image.lat
             lon = image.lon
-            logger.info(f"{__name__}: {lat} {lon}")
+            logger.debug(f"{__name__}: {lat} {lon}")
             ctx = {"form": form, "lat": lat, "lon": lon}
     return render(request, "gps/upload_image.html", ctx)

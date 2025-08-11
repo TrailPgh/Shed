@@ -10,8 +10,6 @@ class ImageGps:
         self.lat = None
         self.lon = None
         self.image = pil_image
-        logger.info(f"{__name__}: {type(self.image)}: {self.image.__repr__()}")
-        logger.info(f"{__name__}.__init__: {type(self.image)}: {self.image.__repr__()}")
         if self.image is None:
             return
         self.exif = self.get_exif(self.image)
@@ -22,7 +20,7 @@ class ImageGps:
             return
         self.lat = self.get_lat(self.gps_ifd)
         self.lon = self.get_lon(self.gps_ifd)
-        logger.info(f"{__name__}.__init__: {self.__dict__}")
+        logger.debug(f"{__name__}.__init__: {self.__dict__}")
 
     def get_lat(self, gps_ifd):
         gps_lat = gps_ifd.get(ExifTags.GPS.GPSLatitude)
@@ -44,9 +42,6 @@ class ImageGps:
     def get_gps_ifd(self, exif):
         try:
             gps_ifd = exif.get_ifd(ExifTags.IFD.GPSInfo)
-            logger.info(
-                f"{__name__}.get_gps_ifd: {type(gps_ifd)}: gps_ifd[ExifTags.GPS.GPSLongitude]: {gps_ifd[ExifTags.GPS.GPSLongitude]}"
-            )
             return gps_ifd
         except Exception as e:
             logger.error(f"{__name__}: Error processing image: {e}")
