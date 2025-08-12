@@ -29,6 +29,7 @@ SECRET_KEY = "django-insecure-e#1q5n_gmqq7=5*!xh(y*kdgrrlgfp8sdq$iut=oi!&4ra8_y6
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    "grateful-allowing-raccoon.ngrok-free.app",  # uses on ngrok external service.
     "localhost",
     "127.0.0.1",
     "[::1",
