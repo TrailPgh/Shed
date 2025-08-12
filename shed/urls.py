@@ -27,4 +27,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("gps/", gps_index, name="gps"),
     path("gps/upload_image", gps_upload_image, name="gps_upload_image"),
+    path("gps/rcv_mms_image", gps_upload_image, name="gps_upload_image"),
 ]

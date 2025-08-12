@@ -40,3 +40,11 @@ def upload_image(request):
             logger.debug(f"{__name__}: {lat} {lon}")
             ctx = {"form": form, "lat": lat, "lon": lon}
     return render(request, "gps/upload_image.html", ctx)
+
+
+def rcv_mms_image(request):
+    logger.debug(f"{__name__}.rcv_mms_image: request: {request.__str__()}")
+    # Create a new Twilio MessagingResponse
+    # resp = MessagingResponse()
+    # resp.message("The Robots are coming! Head for the hills!")
+    # return HttpResponse(str(resp), mimetype="text/plain")
