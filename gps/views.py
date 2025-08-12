@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import ImageUploadForm
 from .lib.ImageGps import ImageGps
@@ -42,6 +43,7 @@ def upload_image(request):
     return render(request, "gps/upload_image.html", ctx)
 
 
+@csrf_exempt
 def rcv_mms_image(request):
     logger.debug(f"{__name__}.rcv_mms_image: request: {request.__str__()}")
     # Create a new Twilio MessagingResponse
