@@ -47,7 +47,7 @@ def upload_image(request):
 
 @csrf_exempt
 def rcv_mms_image(request):
-    logger.info(f"{__name__}.rcv_mms_image: request: {request.__str__()}")
+    logger.info(f"{__name__}.rcv_mms_image: request: {request.body}")
     # Create a new Twilio MessagingResponse
     resp = MessagingResponse()
     resp.message("The Robots are coming! Head for the hills!")
