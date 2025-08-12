@@ -51,9 +51,12 @@ def rcv_mms_image(request):
     if request.method == "POST":
         # Extract message details from the POST request
         to = request.POST.get("To", "")
+        numMedia = request.POST.get("NumMedia", "")
         from_ = request.POST.get("From", "")
         body = request.POST.get("Body", "")
-        logger.info(f"{__name__}.rcv_mms_image: body: {body}, from_: {from_}, to: {to}")
+        logger.info(
+            f"{__name__}.rcv_mms_image: \nfrom_: {from_}, \nto: {to}, \nnumMedia: {numMedia}, \nbody: {body}"
+        )
 
         # Create a new Twilio MessagingResponse
         resp = MessagingResponse()
