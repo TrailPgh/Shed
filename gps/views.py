@@ -65,7 +65,7 @@ def rcv_mms_image(request):
     ##
     # prepare a Twilio MessagingResponse
     resp = MessagingResponse()
-    resp.message(f"Message received: {body.count(20)}")
+    resp.message(f"Message received: {body[0:20]}")
 
     ##
     # if mms media is present download the image and process it
