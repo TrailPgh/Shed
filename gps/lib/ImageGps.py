@@ -49,14 +49,16 @@ class ImageGps:
 
     @staticmethod
     def from_image_bytes(inMemoryUploadedFile):
-        try:
-            pil_image = Image.open(inMemoryUploadedFile)
-            return ImageGps(pil_image)
-        except Exception as e:
-            logger.error(
-                f"{__name__}: Error getting PilImage: {type(e)}: {e.__str__()}"
-            )
-            return None
+        pil_image = Image.open(inMemoryUploadedFile)
+        return ImageGps(pil_image)
+        # try:
+        #     pil_image = Image.open(inMemoryUploadedFile)
+        #     return ImageGps(pil_image)
+        # except Exception as e:
+        #     logger.error(
+        #         f"{__name__}: Error getting PilImage: {type(e)}: {e.__str__()}"
+        #     )
+        #     return None
 
     @staticmethod
     def convert_lat_coords(gps_lat, gps_lat_ref):
