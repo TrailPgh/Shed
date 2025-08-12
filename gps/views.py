@@ -1,6 +1,5 @@
 import logging
 import os
-from io import BytesIO
 
 import requests
 from django.http import HttpResponse
@@ -82,7 +81,7 @@ def rcv_mms_image(request):
         if r.status_code == 200:
             logger.info(f"{__name__}.rcv_mms_image: MMS media retrieved...")
             resp.message(f"MMS media retrieved.")
-            image = ImageGps.from_image_bytes(BytesIO(r.content))
+            image = ImageGps.from_image_bytes(r.content)
             if image is not None:
                 logger.info(
                     f"{__name__}.rcv_mms_image: MMS media appears to be an image..."
