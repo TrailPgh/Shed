@@ -58,4 +58,4 @@ def rcv_mms_image(request):
         # Create a new Twilio MessagingResponse
         resp = MessagingResponse()
         resp.message("The Robots are coming! Head for the hills!")
-        return HttpResponse(str(resp), content_type="text/xml")
+        return HttpResponse(str(resp))
