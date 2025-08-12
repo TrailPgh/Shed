@@ -168,6 +168,14 @@ LOGGING = {
             "class": "logging.StreamHandler",
         },
     },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",  # Adjust as needed (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+            "propagate": False,
+        },
+        # Add other app-specific loggers here
+    },
     "root": {
         "handlers": ["console"],
         "level": "INFO",
