@@ -54,11 +54,11 @@ def rcv_mms_image(request):
         numMedia = request.POST.get("NumMedia", "")
         from_ = request.POST.get("From", "")
         body = request.POST.get("Body", "")
+        mediaUrl = request.POST.get("MediaUrl0", "")
         logger.info(
-            f"{__name__}.rcv_mms_image: \nfrom_: {from_}, \nto: {to}, \nnumMedia: {numMedia}, \nbody: {body}"
+            f"{__name__}.rcv_mms_image: \n to: {to}, \n from_: {from_}, \n numMedia: {numMedia}, \n body: {body}, \n mediaUrl: {mediaUrl}"
         )
-
         # Create a new Twilio MessagingResponse
         resp = MessagingResponse()
         resp.message("The Robots are coming! Head for the hills!")
-        return HttpResponse(str(resp))
+        return HttpResponse(str(resp), content_type="application/xml")
