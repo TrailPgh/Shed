@@ -1,5 +1,5 @@
 import logging
-import os
+from io import BytesIO
 
 import requests
 from django.http import HttpResponse
@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from twilio.twiml.messaging_response import MessagingResponse
 
+from shed.settings import INSTALLED_APPS, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
 from .forms import ImageUploadForm
 from .lib.ImageGps import ImageGps
 
@@ -50,6 +51,8 @@ def upload_image(request):
 @csrf_exempt
 def rcv_mms_image(request):
     logger.info(f"{__name__}.rcv_mms_image: request: {request.body}")
+    if TWILIO_ACCOUNT_SID is None or TWILIO_AUTH_TOKEN is None:
+        raise Exception("Twilio account SID and auth token not set.")
     if request.method != "POST":
         return HttpResponse("Ok. Use method POST to begin.")
     # Extract message details from the POST request
@@ -61,27 +64,26 @@ def rcv_mms_image(request):
     logger.info(
         f"{__name__}.rcv_mms_image: \n to: {to}, \n from_: {from_}, \n numMedia: {num_media}, \n body: {body}, \n mediaUrl: {media_url}"
     )
+    INSTALLED_APPS.append("twilio")
     ##
     # prepare a Twilio MessagingResponse
     resp = MessagingResponse()
-    resp.message(f"Message received: {body[0:20]}")
-
     ##
     # if mms media is present download the image and process it
     if num_media > 0:
         logger.info(f"{__name__}.rcv_mms_image: media detected...")
-        resp.message(f"MMS media detected.")
+        # resp.message(f"MMS media detected.")
         r = requests.get(
             media_url,
             auth=(
-                os.environ["TWILIO_ACCOUNT_SID"],
-                os.environ["TWILIO_AUTH_TOKEN"],
+                TWILIO_ACCOUNT_SID,
+                TWILIO_AUTH_TOKEN,
             ),
         )
         if r.status_code == 200:
             logger.info(f"{__name__}.rcv_mms_image: MMS media retrieved...")
-            resp.message(f"MMS media retrieved.")
-            image = ImageGps.from_image_bytes(r.content)
+            # resp.message(f"MMS media retrieved.")
+            image = ImageGps.from_image_bytes(BytesIO(r.content))
             if image is not None:
                 logger.info(
                     f"{__name__}.rcv_mms_image: MMS media appears to be an image..."
@@ -90,8 +92,9 @@ def rcv_mms_image(request):
                 lon = image.lon
                 logger.debug(f"{__name__}.rcv_mms_image: lat, lon: {lat}, {lon}")
                 if lat and lon:
-                    resp.message(f"GPS coords detected: {lat}, {lon}")
+                    resp.message(f"Image received, GPS coords detected: {lat}, {lon}")
                 else:
-                    resp.message(f"image retrieved, but no GPS info found.")
+                    resp.message(f"Image received, no GPS info found.")
 
+    # resp.message(f"Message received: {body[0:20]}")
     return HttpResponse(str(resp), content_type="application/xml")

@@ -10,14 +10,23 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import logging
 import os
 from pathlib import Path
 
+import environ
 import google.cloud.logging
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+##
+# load env vars from .env file via django-environ
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -26,7 +35,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-e#1q5n_gmqq7=5*!xh(y*kdgrrlgfp8sdq$iut=oi!&4ra8_y6"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = [
     "grateful-allowing-raccoon.ngrok-free.app",  # uses on ngrok external service.
@@ -172,13 +181,18 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "INFO",  # Adjust as needed (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+            "level": env("LOG_LEVEL", str, logging.INFO),
             "propagate": False,
         },
         # Add other app-specific loggers here
     },
     "root": {
         "handlers": ["console"],
-        "level": "INFO",
+        "level": env("LOG_LEVEL", str, logging.INFO),
     },
 }
+
+##
+# twilio credentials. used for SMS and MMS messaging.
+TWILIO_ACCOUNT_SID = env("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN")

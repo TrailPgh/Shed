@@ -6,21 +6,31 @@ logger = logging.getLogger(__name__)
 
 
 class ImageGps:
-    def __init__(self, pil_image):
+    def __init__(
+        self,
+        pil_image: Image = None,
+    ):
         self.lat = None
         self.lon = None
+        self.exif = None
+        self.gps_ifd = None
         self.image = pil_image
         if self.image is None:
             return
+
         self.exif = self.get_exif(self.image)
-        if self.exif is None:
+        logger.info(f"{__name__}.__init__: exif: {self.exif.__str__()}")
+        if self.exif is None or not self.exif:
             return
+
         self.gps_ifd = self.get_gps_ifd(self.exif)
-        if self.gps_ifd is None:
+        logger.info(f"{__name__}.__init__: gps_ifd: {self.gps_ifd.__str__()}")
+        if self.gps_ifd is None or not self.gps_ifd:
             return
+
         self.lat = self.get_lat(self.gps_ifd)
         self.lon = self.get_lon(self.gps_ifd)
-        logger.debug(f"{__name__}.__init__: {self.__dict__}")
+        logger.info(f"{__name__}.__init__: {self.__dict__}")
 
     def get_lat(self, gps_ifd):
         gps_lat = gps_ifd.get(ExifTags.GPS.GPSLatitude)
@@ -49,16 +59,14 @@ class ImageGps:
 
     @staticmethod
     def from_image_bytes(inMemoryUploadedFile):
-        pil_image = Image.open(inMemoryUploadedFile)
-        return ImageGps(pil_image)
-        # try:
-        #     pil_image = Image.open(inMemoryUploadedFile)
-        #     return ImageGps(pil_image)
-        # except Exception as e:
-        #     logger.error(
-        #         f"{__name__}: Error getting PilImage: {type(e)}: {e.__str__()}"
-        #     )
-        #     return None
+        try:
+            pil_image = Image.open(inMemoryUploadedFile)
+            return ImageGps(pil_image)
+        except Exception as e:
+            logger.error(
+                f"{__name__}: Error getting PilImage: {type(e)}: {e.__str__()}"
+            )
+            return None
 
     @staticmethod
     def convert_lat_coords(gps_lat, gps_lat_ref):
