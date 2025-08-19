@@ -34,23 +34,28 @@
 
     {% if lat == None %}
         <h1>
+            <strike>
             Text (MMS) an Image to Extract GPS Coords from Image Exif tags
+            </strike>
         </h1>
         <h2>
-            Well, you could if Exif tags weren't stripped out of images sent via MMS
+            Unfortunately, this is not possible. It's a failed experiment.
         </h2>
+        <p style="width: 67%;">
+            Exif tags are stripped out of images sent via MMS texting.
+            The hypothesis with this experiment was that maybe if we parsed the
+            image ourselves or used Twilio to receive the MMS we would get a different
+            result. Nope, no GPS info or Exif tags came through with the image.
+        </p>
 
 
 
         <fieldset class="well">
-            <legend>
-                To Begin, Send an Image via Text (MMS)
-            </legend>
 
-            Text a photo to this number:
-            <a href="sms:18778796908">
-                (+1) 877-879-6908
-            </a>
+            <strike>
+                Text a photo to this number:
+                (+1) 999-999-9999
+            </strike>
 
         </fieldset>
 
@@ -60,7 +65,6 @@
         </p>
         <ul>
             <li>JPEG is probably best, though several photo formats may work.</li>
-            <li>Image file size is limited to 10MB for now.</li>
             <li>The image uploaded is processed and discarded, it is not saved by this app.</li>
         </ul>
         </strike>
