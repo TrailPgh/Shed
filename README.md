@@ -8,17 +8,17 @@ Our first use will be GPS-related functionality.
 
 ## Shed: Where tools are stored
 
-Python was chosen because its what Ricky already has some 
-code written in, it's easy to install and use, its popular and free,
-and its an excellent choice for data-related projects.
+Python was chosen because it's what Ricky already has some 
+code written in, it's easy to install and use, it's popular and free,
+and it's an excellent choice for data-related projects.
 
-Django was chosen because it's a web framework that is easy to 
+Django was chosen because it's a web framework that is straightforward to 
 use and has a lot of documentation, it is popular and has a vast
-community and ecosystem, and also because its a full-featured full-stack
-web appplciation framework that includes tooling for not just HTTP handler
+community and ecosystem, and because it's a full-featured full-stack
+web application framework that includes tooling for not just HTTP handler
 functions and UI templates, but also database models, authentication, an
 ORM (object-relational mapper), and more. As opposed to Flask, which is a 
-microframework, and does not include all the tooling that Django does.
+ microframework and does not include all the tooling that Django does.
 
 # Code Policy
 
@@ -48,7 +48,7 @@ Pylint is a popular Python static analysis tool and the one recommended by
 [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html).
 
 Pylint is a static code analyzer for Python
-Pylint analyses your code without actually running it. It checks for errors, 
+Pylint analyzes your code without actually running it. It checks for errors, 
 enforces a coding standard, looks for code smells, and can make suggestions about how
 the code could be refactored.
 

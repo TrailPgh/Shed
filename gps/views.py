@@ -98,3 +98,15 @@ def rcv_mms_image(request):
 
     # resp.message(f"Message received: {body[0:20]}")
     return HttpResponse(str(resp), content_type="application/xml")
+
+
+@csrf_exempt
+def rcv_email_image(request):
+    logger.info(f"{__name__}.rcv_email_image: request: {request.body}")
+
+    if TWILIO_ACCOUNT_SID is None or TWILIO_AUTH_TOKEN is None:
+        raise Exception("Twilio account SID and auth token not set.")
+
+    if request.method == "POST":
+        INSTALLED_APPS.append("twilio")
+    return HttpResponse("Ok. Use method POST to begin.")
