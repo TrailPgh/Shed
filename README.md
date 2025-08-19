@@ -1,3 +1,5 @@
+![image of TrailPgh's Trailer](assets/images/TrailPghTrailer.jpg)
+
 # Introduction
 
 This web app is a Django/Python project intended to be used for 
