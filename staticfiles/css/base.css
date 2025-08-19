@@ -1,0 +1,22 @@
+/**
+ * NB: "color-scheme: light dark" enables support for the light-dark() color function.
+ */
+:root {
+    color-scheme: light dark;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: light-dark(#eee, #333);
+    color: light-dark(#000, #eee);
+}
+
+li {
+    margin-top: 10px;
+}
+
+fieldset.well {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    padding: 50px;
+}
