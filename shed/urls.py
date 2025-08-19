@@ -19,14 +19,14 @@ from django.contrib import admin
 from django.urls import path
 
 from gps.views import index as gps_index
-from gps.views import upload_image as gps_upload_image, rcv_mms_image, rcv_email_image
+from gps.views import rcv_image_html, rcv_image_mms, rcv_image_email
 from shed.views import index as shed_index
 
 urlpatterns = [
     path("", shed_index, name="index"),
     path("admin/", admin.site.urls),
     path("gps/", gps_index, name="gps"),
-    path("gps/upload_image", gps_upload_image, name="gps_upload_image"),
-    path("gps/rcv_mms_image", rcv_mms_image, name="rcv_mms_image"),
-    path("gps/rcv_email_image", rcv_email_image, name="rcv_email_image"),
+    path("gps/rcv_image_html", rcv_image_html, name="rcv_image_html"),
+    path("gps/rcv_image_mms", rcv_image_mms, name="rcv_image_mms"),
+    path("gps/rcv_image_email", rcv_image_email, name="rcv_image_email"),
 ]

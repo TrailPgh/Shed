@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Upload Image: GPS: {% endblock %}
+{% block title %}Email an Image: GPS: {% endblock %}
 
 {% block content %}
 
@@ -26,7 +26,7 @@
         </fieldset>
         <p style="margin-top: 60px;">
             Go here to
-            <a href="/gps/rcv_image_html">
+            <a href="/gps/rcv_image_email">
                 start over
             </a>
         </p>
@@ -34,7 +34,7 @@
 
     {% if lat == None %}
         <h1>
-            Upload an Image to Extract GPS Coords from Image Exif tags
+            Email an Image to Extract GPS Coords from Image Exif tags
         </h1>
         <p>
             Please note that this is very "alpha" and will have rough edges.
@@ -42,17 +42,19 @@
         <ul>
             <li>JPEG is probably best, though several photo formats may work.</li>
             <li>Image file size is limited to 10MB for now.</li>
-            <li>The image uploaded is processed and discarded, it is not saved.</li>
+            <li>The image uploaded is processed and discarded, it is not saved by this app.</li>
         </ul>
+
         <fieldset class="well">
             <legend>
-                To Begin, Upload an Image with GPS Coords
+                Email an Image with GPS Coords
             </legend>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Upload</button>
-            </form>
+
+            Text a photo to this number:
+            <a href="mailto:gps-image@shed.trailpittsburgh.org">
+                gps-image@shed.trailpittsburgh.org
+            </a>
+
         </fieldset>
     {% endif %}
 

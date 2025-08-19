@@ -31,7 +31,7 @@ def index(request):
 # While most newer iPhones have a 12MP sensor, the file size can still vary
 # depending on the scene and settings.
 # Features like HDR and Live Photos can increase the file size.
-def upload_image(request):
+def rcv_image_html(request):
     form = ImageUploadForm()
     image = ImageGps(None)
     lat = None
@@ -43,36 +43,33 @@ def upload_image(request):
             image = ImageGps.from_image_bytes(request.FILES["file"])
             lat = image.lat
             lon = image.lon
-            logger.debug(f"{__name__}: {lat} {lon}")
+            logger.debug(f"{__name__}.rcv_image_html: {lat} {lon}")
             ctx = {"form": form, "lat": lat, "lon": lon}
     return render(request, "gps/upload_image.html", ctx)
 
 
 @csrf_exempt
-def rcv_mms_image(request):
-    logger.info(f"{__name__}.rcv_mms_image: request: {request.body}")
+def rcv_image_mms(request):
+    logger.info(f"{__name__}.rcv_image_mms: request: {request.body}")
+
     if TWILIO_ACCOUNT_SID is None or TWILIO_AUTH_TOKEN is None:
-        raise Exception("Twilio account SID and auth token not set.")
+        raise Exception("Twilio Account SID or AuthToken not set.")
+
     if request.method != "POST":
-        return HttpResponse("Ok. Use method POST to begin.")
-    # Extract message details from the POST request
+        return render(request, "gps/image_via_mms.html")
+
     to = request.POST.get("To", "")
     num_media = int(request.POST.get("NumMedia", ""))
     from_ = request.POST.get("From", "")
     body = request.POST.get("Body", "")
     media_url = request.POST.get("MediaUrl0", "")
     logger.info(
-        f"{__name__}.rcv_mms_image: \n to: {to}, \n from_: {from_}, \n numMedia: {num_media}, \n body: {body}, \n mediaUrl: {media_url}"
+        f"{__name__}.rcv_image_mms: \n to: {to}, \n from_: {from_}, \n numMedia: {num_media}, \n body: {body}, \n mediaUrl: {media_url}"
     )
     INSTALLED_APPS.append("twilio")
-    ##
-    # prepare a Twilio MessagingResponse
     resp = MessagingResponse()
-    ##
-    # if mms media is present download the image and process it
     if num_media > 0:
-        logger.info(f"{__name__}.rcv_mms_image: media detected...")
-        # resp.message(f"MMS media detected.")
+        logger.info(f"{__name__}.rcv_image_mms: media detected...")
         r = requests.get(
             media_url,
             auth=(
@@ -81,32 +78,62 @@ def rcv_mms_image(request):
             ),
         )
         if r.status_code == 200:
-            logger.info(f"{__name__}.rcv_mms_image: MMS media retrieved...")
-            # resp.message(f"MMS media retrieved.")
+            logger.info(f"{__name__}.rcv_image_mms: MMS media retrieved...")
             image = ImageGps.from_image_bytes(BytesIO(r.content))
             if image is not None:
                 logger.info(
-                    f"{__name__}.rcv_mms_image: MMS media appears to be an image..."
+                    f"{__name__}.rcv_image_mms: MMS media appears to be an image..."
                 )
                 lat = image.lat
                 lon = image.lon
-                logger.debug(f"{__name__}.rcv_mms_image: lat, lon: {lat}, {lon}")
+                logger.debug(f"{__name__}.rcv_image_mms: lat, lon: {lat}, {lon}")
                 if lat and lon:
                     resp.message(f"Image received, GPS coords detected: {lat}, {lon}")
                 else:
                     resp.message(f"Image received, no GPS info found.")
 
-    # resp.message(f"Message received: {body[0:20]}")
     return HttpResponse(str(resp), content_type="application/xml")
 
 
 @csrf_exempt
-def rcv_email_image(request):
-    logger.info(f"{__name__}.rcv_email_image: request: {request.body}")
+def rcv_image_email(request):
+    # logger.info(f"{__name__}.rcv_image_email: request: {request.body}")
 
     if TWILIO_ACCOUNT_SID is None or TWILIO_AUTH_TOKEN is None:
-        raise Exception("Twilio account SID and auth token not set.")
+        raise Exception("Twilio Account SID or AuthToken not set.")
 
-    if request.method == "POST":
-        INSTALLED_APPS.append("twilio")
-    return HttpResponse("Ok. Use method POST to begin.")
+    if request.method != "POST":
+        return render(request, "gps/image_via_email.html")
+
+    INSTALLED_APPS.append("twilio")
+    to = request.POST.get("to", "")
+    from_ = request.POST.get("from", "")
+    subject = request.POST.get("subject", "")
+    text = request.POST.get("text", "")
+    html = request.POST.get("html", "")
+    attachments_count = int(request.POST.get("attachments", ""))
+    attachment_info = request.POST.get("attachment-info", "")
+    logger.info(
+        f"{__name__}.rcv_image_email: \n to: {to}, \n from_: {from_}, \n subject: {subject}, \n text: {text}, \n html: {html}, \n attachments_count: {attachments_count}, \n attachment-info: {attachment_info}"
+    )
+    logger.info(request.POST.keys())
+    resp = MessagingResponse()
+    if attachments_count > 0:
+        logger.info(f"{__name__}.rcv_image_email: attachments detected...")
+        logger.info(request.FILES)
+        in_memory_file = request.FILES["attachment1"]
+        image = ImageGps.from_image_bytes(in_memory_file)
+        if image is not None:
+            logger.info(
+                f"{__name__}.rcv_image_mms: MMS media appears to be an image..."
+            )
+            lat = image.lat
+            lon = image.lon
+            logger.debug(f"{__name__}.rcv_image_mms: lat, lon: {lat}, {lon}")
+            if lat and lon:
+                resp.message(f"Image received, GPS coords detected: {lat}, {lon}")
+            else:
+                resp.message(f"Image received, no GPS info found.")
+    else:
+        resp.message("We received it. No attachments found.")
+    return HttpResponse(str(resp), content_type="application/xml")

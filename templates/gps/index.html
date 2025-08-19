@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 
-{% block title %}GPS Index: {% endblock %}
+{% block title %}GPS Functions: {% endblock %}
 
 {% block content %}
     <div>
@@ -12,16 +12,21 @@
     </div>
 
     <h1>
-        GPS Home.
+        GPS Functions Index
     </h1>
 
     <p>
-        Whats available:
+        What's available:
     </p>
     <ul>
-        <li><a href="./upload_image">upload a photo to see its GPS coordinates</a></li>
-        <li><a href="./rcv_mms_image">Receive a SMS message containing a photo</a></li>
-        <li><a href="./rcv_email_image">Receive an Email message with a photo attached </a></li>
+        <li>
+            Extract GPS Coordinates from an Image via:
+            <ul>
+                <li><a href="./rcv_image_html">HTML Form image upload</a></li>
+                <li><a href="./rcv_image_mms">Send a text message (MMS) containing a photo</a></li>
+                <li><a href="./rcv_image_email">Send an Email with a photo attached w/ GPS Coordinates</a></li>
+            </ul>
+        </li>
     </ul>
 
 {% endblock %}
