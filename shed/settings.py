@@ -146,11 +146,14 @@ USE_TZ = True
 ##
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
+# STATICFILES_DIRS is from where static files start, before they are moved to STATIC_ROOT.
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "assets"),
 ]
-STATIC_URL = "static/"
+# STATIC_ROOT is where static files are moved to after they are collected/processed.
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+# STATIC_URL is the URL path from which static files are mapped/served from STATIC_ROOT.
+STATIC_URL = "static/"
 
 
 ##
@@ -199,18 +202,3 @@ LOGGING = {
 # twilio credentials. used for SMS and MMS messaging.
 TWILIO_ACCOUNT_SID = env("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN")
-
-
-##
-# Define static storage via django-storages[google]
-GS_BUCKET_NAME = env("GS_BUCKET_NAME")
-GS_DEFAULT_ACL = "publicRead"
-if DEBUG is False:
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
-        },
-    }
