@@ -198,3 +198,18 @@ LOGGING = {
 # twilio credentials. used for SMS and MMS messaging.
 TWILIO_ACCOUNT_SID = env("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN")
+
+
+##
+# Define static storage via django-storages[google]
+GS_BUCKET_NAME = env("GS_BUCKET_NAME")
+GS_DEFAULT_ACL = "publicRead"
+if DEBUG is False:
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+        },
+    }
