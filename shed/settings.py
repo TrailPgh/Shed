@@ -152,6 +152,7 @@ STATICFILES_DIRS = [
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+
 ##
 # MEDIA_ROOT will hold user-uploaded files, e.g. photos uploaded for GPS coords.
 MEDIA_ROOT = os.path.join(BASE_DIR, "uploaded_files")
