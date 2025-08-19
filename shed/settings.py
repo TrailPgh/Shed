@@ -143,21 +143,20 @@ USE_I18N = True
 USE_TZ = True
 
 
+##
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-STATIC_URL = "assets/"
+STATIC_URL = "static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "assets"),)
 
 ##
 # MEDIA_ROOT will hold user-uploaded files, e.g. photos uploaded for GPS coords.
 MEDIA_ROOT = os.path.join(BASE_DIR, "uploaded_files")
 
-
+##
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
