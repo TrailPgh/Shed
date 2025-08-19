@@ -50,7 +50,7 @@ def rcv_image_html(request):
 
 @csrf_exempt
 def rcv_image_mms(request):
-    logger.info(f"{__name__}.rcv_image_mms: request: {request.body}")
+    # logger.debug(f"{__name__}.rcv_image_mms: request: {request.body}")
 
     if TWILIO_ACCOUNT_SID is None or TWILIO_AUTH_TOKEN is None:
         raise Exception("Twilio Account SID or AuthToken not set.")
@@ -97,7 +97,7 @@ def rcv_image_mms(request):
 
 @csrf_exempt
 def rcv_image_email(request):
-    # logger.info(f"{__name__}.rcv_image_email: request: {request.body}")
+    logger.info(f"{__name__}.rcv_image_email...")
 
     if TWILIO_ACCOUNT_SID is None or TWILIO_AUTH_TOKEN is None:
         raise Exception("Twilio Account SID or AuthToken not set.")
@@ -116,24 +116,29 @@ def rcv_image_email(request):
     logger.info(
         f"{__name__}.rcv_image_email: \n to: {to}, \n from_: {from_}, \n subject: {subject}, \n text: {text}, \n html: {html}, \n attachments_count: {attachments_count}, \n attachment-info: {attachment_info}"
     )
-    logger.info(request.POST.keys())
     resp = MessagingResponse()
     if attachments_count > 0:
-        logger.info(f"{__name__}.rcv_image_email: attachments detected...")
-        logger.info(request.FILES)
+        logger.info(
+            f"{__name__}.rcv_image_email: {attachments_count} attachment(s) detected..."
+        )
         in_memory_file = request.FILES["attachment1"]
         image = ImageGps.from_image_bytes(in_memory_file)
-        if image is not None:
+        if image is None:
+            logger.warning(
+                f"{__name__}.rcv_image_mms: attached media does not appear to be an image. ({in_memory_file.content_type})"
+            )
+        elif image is not None:
             logger.info(
-                f"{__name__}.rcv_image_mms: MMS media appears to be an image..."
+                f"{__name__}.rcv_image_mms: attached media appears to be an image..."
             )
             lat = image.lat
             lon = image.lon
-            logger.debug(f"{__name__}.rcv_image_mms: lat, lon: {lat}, {lon}")
             if lat and lon:
-                resp.message(f"Image received, GPS coords detected: {lat}, {lon}")
+                logger.info(
+                    f"{__name__}.rcv_image_mms: GPS coords: lat, lon: {lat}, {lon}"
+                )
             else:
-                resp.message(f"Image received, no GPS info found.")
-    else:
-        resp.message("We received it. No attachments found.")
+                logger.warning(
+                    f"{__name__}.rcv_image_mms: GPS info missing or incomplete. detected: lat, lon: {lat}, {lon}"
+                )
     return HttpResponse(str(resp), content_type="application/xml")

@@ -36,14 +36,11 @@
         <h1>
             Text (MMS) an Image to Extract GPS Coords from Image Exif tags
         </h1>
-        <p>
-            Please note that this is very "alpha" and will have rough edges.
-        </p>
-        <ul>
-            <li>JPEG is probably best, though several photo formats may work.</li>
-            <li>Image file size is limited to 10MB for now.</li>
-            <li>The image uploaded is processed and discarded, it is not saved by this app.</li>
-        </ul>
+        <h2>
+            Well, you could if Exif tags weren't stripped out of images sent via MMS
+        </h2>
+
+
 
         <fieldset class="well">
             <legend>
@@ -56,6 +53,17 @@
             </a>
 
         </fieldset>
+
+        <strike>
+        <p>
+            Please note that this is very "alpha" and will have rough edges.
+        </p>
+        <ul>
+            <li>JPEG is probably best, though several photo formats may work.</li>
+            <li>Image file size is limited to 10MB for now.</li>
+            <li>The image uploaded is processed and discarded, it is not saved by this app.</li>
+        </ul>
+        </strike>
     {% endif %}
 
 {% endblock %}
