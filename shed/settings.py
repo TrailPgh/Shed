@@ -155,7 +155,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # STATIC_URL is the URL path from which static files are mapped/served from STATIC_ROOT.
 STATIC_URL = "static/"
 
-
 ##
 # MEDIA_ROOT will hold user-uploaded files, e.g. photos uploaded for GPS coords.
 MEDIA_ROOT = os.path.join(BASE_DIR, "uploaded_files")
