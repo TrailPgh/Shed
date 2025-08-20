@@ -34,28 +34,18 @@
 
     {% if lat == None %}
         <h1>
-            Email an Image to Extract GPS Coords from Image Exif tags
+            Send an Email with an Attached Image to Extract GPS Coords from Image Exif tags
         </h1>
-
+        <h2>
+            This is working.
+        </h2>
         <p>
-            Please note that this is very "alpha" and will have rough edges.
+            It uses SendGrid
+            {% with inbound_parse_url="https://www.twilio.com/docs/sendgrid/for-developers/parsing-email/setting-up-the-inbound-parse-webhook" %}
+                <a href="{{ inbound_parse_url }}" target="_blank">Inbound Parse</a>
+            {% endwith %}
+            to receive the email.
         </p>
-        <ul>
-            <li>JPEG is probably best, though several photo formats may work.</li>
-            <li>The image is processed and discarded by this app.</li>
-            <li>
-                This app is will reply to your email with the results,
-                including GPS coordinates if present.
-                <ul>
-                    <li>
-                        If you don't get a reply, check your spam folder
-                    </li>
-                    <li>
-                        or it may have encountered an error
-                    </li>
-                </ul>
-            </li>
-        </ul>
 
         <fieldset class="well">
             <legend>
@@ -68,6 +58,38 @@
             </a>
 
         </fieldset>
+
+        <p>
+            Please note that this is very "alpha" and will have rough edges.
+        </p>
+        <ul>
+            <li>JPEG is probably best, though several photo formats may work.</li>
+            <li>Only the first image is processed if more than one is attached</li>
+            <li>
+                This app will reply to your email
+                <ul>
+                    <li>
+                        using the subject line received
+                    </li>
+                    <li>
+                        and GPS coordinates if found, or else a message indicating the outcome.
+                    </li>
+                </ul>
+            </li>
+            <li>
+                If you don't get a reply
+                <ul>
+                    <li>
+                        Check your spam folder
+                    </li>
+                    <li>
+                        Or it may have encountered an error
+                    </li>
+                </ul>
+            </li>
+            <li>The email and attached image is discarded by this app after processing.</li>
+        </ul>
+
     {% endif %}
 
 {% endblock %}
