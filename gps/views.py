@@ -1,4 +1,5 @@
 import logging
+from enum import Enum
 from io import BytesIO
 
 import requests
@@ -116,29 +117,55 @@ def rcv_image_email(request):
     logger.info(
         f"{__name__}.rcv_image_email: \n to: {to}, \n from_: {from_}, \n subject: {subject}, \n text: {text}, \n html: {html}, \n attachments_count: {attachments_count}, \n attachment-info: {attachment_info}"
     )
-    resp = MessagingResponse()
-    if attachments_count > 0:
+    outcome_state = EmailProcessState.Unset
+    if attachments_count == 0:
+        outcome_state = EmailProcessState.NoAttachment
+    elif attachments_count > 0:
+        outcome_state = EmailProcessState.HasAttachment
         logger.info(
             f"{__name__}.rcv_image_email: {attachments_count} attachment(s) detected..."
         )
         in_memory_file = request.FILES["attachment1"]
         image = ImageGps.from_image_bytes(in_memory_file)
         if image is None:
+            outcome_state = EmailProcessState.NoImage
             logger.warning(
                 f"{__name__}.rcv_image_mms: attached media does not appear to be an image. ({in_memory_file.content_type})"
             )
-        elif image is not None:
+        elif image.__class__ is ImageGps:
+            outcome_state = EmailProcessState.HasImage
             logger.info(
                 f"{__name__}.rcv_image_mms: attached media appears to be an image..."
             )
             lat = image.lat
             lon = image.lon
             if lat and lon:
+                outcome_state = EmailProcessState.Success
                 logger.info(
                     f"{__name__}.rcv_image_mms: GPS coords: lat, lon: {lat}, {lon}"
                 )
             else:
+                outcome_state = EmailProcessState.NoLatLon
                 logger.warning(
                     f"{__name__}.rcv_image_mms: GPS info missing or incomplete. detected: lat, lon: {lat}, {lon}"
                 )
+    resp = resultMessage(outcome_state)
     return HttpResponse(str(resp), content_type="application/xml")
+
+
+class EmailProcessState(Enum):
+    Unset = -1
+    NoAttachment = -10
+    HasAttachment = 10
+    NoImage = -20
+    HasImage = 20
+    NoLatLon = -30
+    Success = 30
+
+
+def resultMessage(emailProcessResult: EmailProcessState):
+    return {
+        EmailProcessState.NoAttachment: "No attachment detected.",
+        EmailProcessState.NoImage: "Attached media does not appear to be an image.",
+        EmailProcessState.Success: "GPS coords: lat, lon: {lat}, {lon}",
+    }[emailProcessResult]
