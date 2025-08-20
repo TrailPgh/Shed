@@ -152,7 +152,7 @@ def rcv_image_email(request):
                 logger.warning(
                     f"{__name__}.rcv_image_mms: GPS info missing or incomplete. detected: lat, lon: {lat}, {lon}"
                 )
-    outcome_short_desc = resultMessage(outcome_state, lat, lon)
+    outcome_short_desc = result_message(outcome_state, lat, lon)
     reply = EmailReply(
         email_to=sender,
         subject=f"Re: {subject}",
@@ -172,10 +172,10 @@ class EmailProcessState(Enum):
     Success = 30
 
 
-def resultMessage(emailProcessResult: EmailProcessState, lat=None, lon=None):
+def result_message(email_process_result: EmailProcessState, lat=None, lon=None):
     return {
         EmailProcessState.NoAttachment: "No attachment detected.",
         EmailProcessState.NoImage: "Attached media does not appear to be an image.",
         EmailProcessState.NoLatLon: "GPS info missing or incomplete.",
         EmailProcessState.Success: f"GPS coords: lat, lon: {lat}, {lon}",
-    }[emailProcessResult]
+    }[email_process_result]
