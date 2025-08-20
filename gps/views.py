@@ -10,6 +10,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 
 from shed.settings import INSTALLED_APPS, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN
 from .forms import ImageUploadForm
+from .lib.EmailReply import EmailReply
 from .lib.ImageGps import ImageGps
 
 logger = logging.getLogger(__name__)
@@ -107,15 +108,17 @@ def rcv_image_email(request):
         return render(request, "gps/image_via_email.html")
 
     INSTALLED_APPS.append("twilio")
+    lat = None
+    lon = None
     to = request.POST.get("to", "")
-    from_ = request.POST.get("from", "")
+    sender = request.POST.get("from", "")
     subject = request.POST.get("subject", "")
     text = request.POST.get("text", "")
     html = request.POST.get("html", "")
     attachments_count = int(request.POST.get("attachments", ""))
     attachment_info = request.POST.get("attachment-info", "")
     logger.info(
-        f"{__name__}.rcv_image_email: \n to: {to}, \n from_: {from_}, \n subject: {subject}, \n text: {text}, \n html: {html}, \n attachments_count: {attachments_count}, \n attachment-info: {attachment_info}"
+        f"{__name__}.rcv_image_email: \n to: {to}, \n from_: {sender}, \n subject: {subject}, \n text: {text}, \n html: {html}, \n attachments_count: {attachments_count}, \n attachment-info: {attachment_info}"
     )
     outcome_state = EmailProcessState.Unset
     if attachments_count == 0:
@@ -149,8 +152,14 @@ def rcv_image_email(request):
                 logger.warning(
                     f"{__name__}.rcv_image_mms: GPS info missing or incomplete. detected: lat, lon: {lat}, {lon}"
                 )
-    resp = resultMessage(outcome_state)
-    return HttpResponse(str(resp), content_type="application/xml")
+    outcome_short_desc = resultMessage(outcome_state, lat, lon)
+    reply = EmailReply(
+        email_to=sender,
+        subject=f"Re: {subject}",
+        short_desc=outcome_short_desc,
+    )
+    reply.send()
+    return HttpResponse(str(outcome_short_desc), content_type="application/xml")
 
 
 class EmailProcessState(Enum):
@@ -163,9 +172,10 @@ class EmailProcessState(Enum):
     Success = 30
 
 
-def resultMessage(emailProcessResult: EmailProcessState):
+def resultMessage(emailProcessResult: EmailProcessState, lat=None, lon=None):
     return {
         EmailProcessState.NoAttachment: "No attachment detected.",
         EmailProcessState.NoImage: "Attached media does not appear to be an image.",
-        EmailProcessState.Success: "GPS coords: lat, lon: {lat}, {lon}",
+        EmailProcessState.NoLatLon: "GPS info missing or incomplete.",
+        EmailProcessState.Success: f"GPS coords: lat, lon: {lat}, {lon}",
     }[emailProcessResult]
