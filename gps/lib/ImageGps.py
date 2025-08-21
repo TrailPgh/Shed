@@ -6,6 +6,17 @@ logger = logging.getLogger(__name__)
 
 
 class ImageGps:
+    @staticmethod
+    def from_image_bytes(inMemoryUploadedFile):
+        try:
+            pil_image = Image.open(inMemoryUploadedFile)
+            return ImageGps(pil_image)
+        except Exception as e:
+            logger.error(
+                f"{__name__}: Error getting PilImage: {type(e)}: {e.__str__()}"
+            )
+            return None
+
     def __init__(
         self,
         pil_image: Image = None,
@@ -28,19 +39,8 @@ class ImageGps:
         if self.gps_ifd is None or not self.gps_ifd:
             return
 
-        self.lat = self.get_lat(self.gps_ifd)
-        self.lon = self.get_lon(self.gps_ifd)
+        self.lat, self.lon = self.get_lat_lon(self.gps_ifd)
         logger.info(f"{__name__}.__init__: {self.__dict__}")
-
-    def get_lat(self, gps_ifd):
-        gps_lat = gps_ifd.get(ExifTags.GPS.GPSLatitude)
-        gps_lat_ref = gps_ifd.get(ExifTags.GPS.GPSLatitudeRef)
-        return self.convert_lat_coords(gps_lat, gps_lat_ref)
-
-    def get_lon(self, gps_ifd):
-        gps_lon = gps_ifd.get(ExifTags.GPS.GPSLongitude)
-        gps_lon_ref = gps_ifd.get(ExifTags.GPS.GPSLongitudeRef)
-        return self.convert_lon_coords(gps_lon, gps_lon_ref)
 
     def get_exif(self, image):
         try:
@@ -57,37 +57,29 @@ class ImageGps:
             logger.error(f"{__name__}: Error processing image: {e}")
             return None
 
-    @staticmethod
-    def from_image_bytes(inMemoryUploadedFile):
-        try:
-            pil_image = Image.open(inMemoryUploadedFile)
-            return ImageGps(pil_image)
-        except Exception as e:
-            logger.error(
-                f"{__name__}: Error getting PilImage: {type(e)}: {e.__str__()}"
-            )
-            return None
+    def get_lat_lon(self, gps_ifd):
+        lat_dms = gps_ifd.get(ExifTags.GPS.GPSLatitude)
+        lon_dms = gps_ifd.get(ExifTags.GPS.GPSLongitude)
+        lat_ref = gps_ifd.get(ExifTags.GPS.GPSLatitudeRef)
+        lon_ref = gps_ifd.get(ExifTags.GPS.GPSLongitudeRef)
+        return self.convert_dms_to_dd(lat_dms, lat_ref, lon_dms, lon_ref)
 
+    ##
+    # convert from a tuple of (d, m, s) to decimal degrees
     @staticmethod
-    def convert_lat_coords(gps_lat, gps_lat_ref):
-        lat_dms = gps_lat
-        lat_ref = gps_lat_ref
-        latitude = ImageGps.convert_to_degrees(lat_dms)
-        if lat_ref == "S":
+    def convert_dms_to_dd(gps_lat, gps_lat_ref, gps_lon, gps_lon_ref):
+        latitude = ImageGps.dms_tuple_to_decimal(gps_lat)
+        longitude = ImageGps.dms_tuple_to_decimal(gps_lon)
+        if gps_lat_ref == "S":
             latitude = -latitude
-        return latitude
-
-    @staticmethod
-    def convert_lon_coords(gps_lon, gps_lon_ref):
-        lon_dms = gps_lon
-        lon_ref = gps_lon_ref
-        longitude = ImageGps.convert_to_degrees(lon_dms)
-        if lon_ref == "W":
+        if gps_lon_ref == "W":
             longitude = -longitude
-        return longitude
+        return latitude, longitude
 
+    ##
+    # convert from a tuple of (d, m, s) to decimal degrees
     @staticmethod
-    def convert_to_degrees(value):
+    def dms_tuple_to_decimal(value):
         d = float(value[0])
         m = float(value[1]) / 60
         s = float(value[2]) / 3600
