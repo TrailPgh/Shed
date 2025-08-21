@@ -58,10 +58,11 @@ class ImageGps:
             return None
 
     def get_lat_lon(self, gps_ifd):
-        lat_dms = gps_ifd.get(ExifTags.GPS.GPSLatitude)
-        lon_dms = gps_ifd.get(ExifTags.GPS.GPSLongitude)
-        lat_ref = gps_ifd.get(ExifTags.GPS.GPSLatitudeRef)
-        lon_ref = gps_ifd.get(ExifTags.GPS.GPSLongitudeRef)
+        g = ExifTags.GPS
+        lat_dms = gps_ifd.get(g.GPSLatitude)
+        lon_dms = gps_ifd.get(g.GPSLongitude)
+        lat_ref = gps_ifd.get(g.GPSLatitudeRef)
+        lon_ref = gps_ifd.get(g.GPSLongitudeRef)
         return self.convert_dms_to_dd(lat_dms, lat_ref, lon_dms, lon_ref)
 
     ##
