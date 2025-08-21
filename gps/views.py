@@ -110,17 +110,10 @@ def rcv_image_email(request):
     INSTALLED_APPS.append("twilio")
     lat = None
     lon = None
-    to = request.POST.get("to", "")
-    sender = request.POST.get("from", "")
-    subject = request.POST.get("subject", "")
-    text = request.POST.get("text", "")
-    html = request.POST.get("html", "")
-    attachments_count = int(request.POST.get("attachments", ""))
-    attachment_info = request.POST.get("attachment-info", "")
-    logger.info(
-        f"{__name__}.rcv_image_email: \n to: {to}, \n from_: {sender}, \n subject: {subject}, \n text: {text}, \n html: {html}, \n attachments_count: {attachments_count}, \n attachment-info: {attachment_info}"
-    )
     outcome_state = EmailProcessState.Unset
+    to, sender, subject, text, html, attachments_count, attachment_info = (
+        get_inputs_from_email(request)
+    )
     if attachments_count == 0:
         outcome_state = EmailProcessState.NoAttachment
     elif attachments_count > 0:
@@ -162,6 +155,20 @@ def rcv_image_email(request):
     return HttpResponse(str(outcome_short_desc), content_type="application/xml")
 
 
+def get_inputs_from_email(request):
+    to = request.POST.get("to", "")
+    sender = request.POST.get("from", "")
+    subject = request.POST.get("subject", "")
+    text = request.POST.get("text", "")
+    html = request.POST.get("html", "")
+    attachments_count = int(request.POST.get("attachments", ""))
+    attachment_info = request.POST.get("attachment-info", "")
+    logger.info(
+        f"{__name__}.rcv_image_email: \n to: {to}, \n from_: {sender}, \n subject: {subject}, \n text: {text}, \n html: {html}, \n attachments_count: {attachments_count}, \n attachment-info: {attachment_info}"
+    )
+    return to, sender, subject, text, html, attachments_count, attachment_info
+
+
 class EmailProcessState(Enum):
     Unset = -1
     NoAttachment = -10
@@ -177,5 +184,5 @@ def result_message(email_process_result: EmailProcessState, lat=None, lon=None):
         EmailProcessState.NoAttachment: "No attachment detected.",
         EmailProcessState.NoImage: "Attached media does not appear to be an image.",
         EmailProcessState.NoLatLon: "GPS info missing or incomplete.",
-        EmailProcessState.Success: f"GPS coords: lat, lon: {lat}, {lon}",
+        EmailProcessState.Success: f"GPS latitude, longitude: {lat}, {lon}",
     }[email_process_result]
