@@ -14,7 +14,7 @@ class ViewsTests(TestCase):
     # --- rcv_image_html ---
 
     def test_rcv_image_html_get_renders(self):
-        request = self.factory.get("/gps/upload_image")
+        request = self.factory.get("/gps/rcv_image_html")
         response = views.rcv_image_html(request)
         self.assertEqual(response.status_code, 200)
 
@@ -32,9 +32,8 @@ class ViewsTests(TestCase):
 
         with patch.object(views.ImageGps, "from_image_bytes", return_value=mock_image):
             post_data = QueryDict(mutable=True)
-            request = self.factory.post(
-                "/gps/upload_image", data=post_data, FILES={"file": uploaded}
-            )
+            post_data.update({"file": uploaded})
+            request = self.factory.post("/gps/rcv_image_html", data=post_data)
             response = views.rcv_image_html(request)
             self.assertEqual(response.status_code, 200)
             # Check the rendered content includes coordinates (the view logs and sets context with lat/lon)
