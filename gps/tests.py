@@ -1,8 +1,9 @@
 from unittest.mock import patch, MagicMock
 
+from PIL import ExifTags as PIL_ExifTags
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import QueryDict
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, SimpleTestCase
 
 from . import views
 
@@ -299,3 +300,99 @@ class ViewsTests(TestCase):
         # EmailProcessState.Unset is not mapped and should raise KeyError
         with self.assertRaises(KeyError):
             views.result_message(views.EmailProcessState.Unset)
+
+
+class ImageGpsTests(SimpleTestCase):
+    def test_dms_tuple_to_decimal(self):
+        from .lib.ImageGps import ImageGps
+
+        # 10° 30' 0" = 10.5
+        self.assertAlmostEqual(
+            ImageGps.dms_tuple_to_decimal((10, 30, 0)), 10.5, places=6
+        )
+        # 0° 0' 30" = 0.008333...
+        self.assertAlmostEqual(
+            ImageGps.dms_tuple_to_decimal((0, 0, 30)), 0.0083333, places=6
+        )
+
+    def test_convert_dms_to_dd_applies_refs(self):
+        from .lib.ImageGps import ImageGps
+
+        # N/E keeps positive
+        lat, lon = ImageGps.convert_dms_to_dd((37, 25, 12), "N", (122, 4, 48), "E")
+        self.assertAlmostEqual(lat, 37.42, places=2)
+        self.assertAlmostEqual(lon, 122.08, places=2)
+        # S/W makes negative
+        lat, lon = ImageGps.convert_dms_to_dd((37, 25, 12), "S", (122, 4, 48), "W")
+        self.assertAlmostEqual(lat, -37.42, places=2)
+        self.assertAlmostEqual(lon, -122.08, places=2)
+
+    def test_get_lat_lon_extracts_and_converts(self):
+        from .lib.ImageGps import ImageGps
+
+        g = PIL_ExifTags.GPS
+        gps_ifd = {
+            g.GPSLatitude: (37, 25, 12),
+            g.GPSLongitude: (122, 4, 48),
+            g.GPSLatitudeRef: "N",
+            g.GPSLongitudeRef: "W",
+        }
+        img = ImageGps(pil_image=None)
+        lat, lon = img.get_lat_lon(gps_ifd)
+        self.assertAlmostEqual(lat, 37.42, places=2)
+        self.assertAlmostEqual(lon, -122.08, places=2)
+
+    def test_get_exif_success_and_failure(self):
+        from .lib.ImageGps import ImageGps
+
+        # Success path
+        image_mock = MagicMock()
+        exif_mock = MagicMock()
+        image_mock.getexif.return_value = exif_mock
+        img = ImageGps(pil_image=None)
+        self.assertIs(img.get_exif(image_mock), exif_mock)
+        # Failure path
+        image_mock.getexif.side_effect = Exception("boom")
+        self.assertIsNone(img.get_exif(image_mock))
+
+    def test_get_gps_ifd_success_and_failure(self):
+        from .lib.ImageGps import ImageGps
+
+        exif_mock = MagicMock()
+        gps_dict = {"x": 1}
+        exif_mock.get_ifd.return_value = gps_dict
+        img = ImageGps(pil_image=None)
+        self.assertIs(img.get_gps_ifd(exif_mock), gps_dict)
+        # Failure path
+        exif_mock.get_ifd.side_effect = Exception("gps error")
+        self.assertIsNone(img.get_gps_ifd(exif_mock))
+
+    def test_from_image_bytes_success_sets_lat_lon(self):
+        from .lib.ImageGps import ImageGps
+
+        g = PIL_ExifTags.GPS
+
+        # Prepare mocks for PIL.Image.open -> image -> exif -> gps_ifd chain
+        image_mock = MagicMock()
+        exif_mock = MagicMock()
+        gps_ifd = {
+            g.GPSLatitude: (37, 25, 12),
+            g.GPSLongitude: (122, 4, 48),
+            g.GPSLatitudeRef: "N",
+            g.GPSLongitudeRef: "W",
+        }
+        exif_mock.get_ifd.return_value = gps_ifd
+        image_mock.getexif.return_value = exif_mock
+
+        with patch("gps.lib.ImageGps.Image.open", return_value=image_mock):
+            obj = ImageGps.from_image_bytes(b"fake-bytes")
+            self.assertIsNotNone(obj)
+            self.assertIsInstance(obj, ImageGps)
+            self.assertAlmostEqual(obj.lat, 37.42, places=2)
+            self.assertAlmostEqual(obj.lon, -122.08, places=2)
+
+    def test_from_image_bytes_failure_returns_none(self):
+        from .lib.ImageGps import ImageGps
+
+        with patch("gps.lib.ImageGps.Image.open", side_effect=Exception("bad image")):
+            self.assertIsNone(ImageGps.from_image_bytes(b"not-an-image"))
