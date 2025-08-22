@@ -161,7 +161,7 @@ def get_inputs_from_email(request):
     subject = request.POST.get("subject", "")
     text = request.POST.get("text", "")
     html = request.POST.get("html", "")
-    attachments_count = int(request.POST.get("attachments", ""))
+    attachments_count = int(request.POST.get("attachments", "") or 0)
     attachment_info = request.POST.get("attachment-info", "")
     logger.info(
         f"{__name__}.rcv_image_email: \n to: {to}, \n from_: {sender}, \n subject: {subject}, \n text: {text}, \n html: {html}, \n attachments_count: {attachments_count}, \n attachment-info: {attachment_info}"

@@ -165,6 +165,7 @@ class ViewsTests(TestCase):
                 mock_image = MagicMock()
                 mock_image.lat = 12.34
                 mock_image.lon = 56.78
+                mock_image.__class__ = views.ImageGps
 
                 with patch.object(
                     views.ImageGps, "from_image_bytes", return_value=mock_image
@@ -179,10 +180,11 @@ class ViewsTests(TestCase):
                         "attachment-info": "{}",
                     }
                     request = self.factory.post(
-                        "/gps/image_via_email",
+                        "/gps/rcv_image_email",
                         data=post_data,
                         FILES={"attachment1": uploaded},
                     )
+                    request.FILES["attachment1"] = uploaded
                     response = views.rcv_image_email(request)
                     self.assertEqual(response.status_code, 200)
                     self.assertIn(
@@ -214,6 +216,7 @@ class ViewsTests(TestCase):
                         data=post_data,
                         FILES={"attachment1": uploaded},
                     )
+                    request.FILES["attachment1"] = uploaded
                     response = views.rcv_image_email(request)
                     self.assertEqual(response.status_code, 200)
                     self.assertIn(
@@ -232,6 +235,7 @@ class ViewsTests(TestCase):
                 mock_image = MagicMock()
                 mock_image.lat = None
                 mock_image.lon = None
+                mock_image.__class__ = views.ImageGps
                 with patch.object(
                     views.ImageGps, "from_image_bytes", return_value=mock_image
                 ):
@@ -249,6 +253,7 @@ class ViewsTests(TestCase):
                         data=post_data,
                         FILES={"attachment1": uploaded},
                     )
+                    request.FILES["attachment1"] = uploaded
                     response = views.rcv_image_email(request)
                     self.assertEqual(response.status_code, 200)
                     self.assertIn(b"GPS info missing or incomplete.", response.content)
