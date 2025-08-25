@@ -184,14 +184,6 @@ LOGGING = {
             "class": "logging.StreamHandler",
         },
     },
-    "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": env("LOG_LEVEL", str, logging.INFO),
-            "propagate": False,
-        },
-        # Add other app-specific loggers here
-    },
     "root": {
         "handlers": ["console"],
         "level": env("LOG_LEVEL", str, logging.INFO),
