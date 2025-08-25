@@ -1,3 +1,4 @@
+import logging
 from unittest.mock import patch, MagicMock
 
 from PIL import ExifTags as PIL_ExifTags
@@ -7,10 +8,16 @@ from django.test import TestCase, RequestFactory, SimpleTestCase
 
 from . import views
 
+logger = logging.getLogger(__name__)
+
 
 class ViewsTests(TestCase):
     def setUp(self):
+        logging.disable(logging.FATAL)
         self.factory = RequestFactory()
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
 
     # --- rcv_image_html ---
 
